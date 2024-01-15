@@ -45,7 +45,8 @@ func ParseCsv(filename string) ([][]string, error) {
 			continue
 		}
 
-		city := strings.TrimSpace(row[4])    // trim spaces from city
+		city := toUpperCase(row[4])          // trim spaces from city and uppercase
+		address := toTitleCase(row[3])       // Trim spaces from address and titlecase
 		vtype := strings.TrimSpace(row[1])   // trim spaces from vehicle type
 		tgu := strings.TrimSpace(row[5])     // trim spaces from TGU
 		network := strings.TrimSpace(row[6]) // trim spaces from network
@@ -53,7 +54,7 @@ func ParseCsv(filename string) ([][]string, error) {
 		// check if TGU is not blank in the CSV
 		if tgu != "" {
 			// append to parsed data
-			parseddata = append(parseddata, []string{city, vtype, network, tgu})
+			parseddata = append(parseddata, []string{city, vtype, network, tgu, address})
 		}
 	}
 

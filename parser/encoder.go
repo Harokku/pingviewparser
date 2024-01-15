@@ -34,7 +34,7 @@ func WritePingviewTemplate(tgu [][]string) error {
 		if len(linedata[2]) > 0 {
 			baseIp = linedata[2][:len(linedata[2])-2]
 		}
-		header := fmt.Sprintf("Group: %s %s - TGU: %s", linedata[0], linedata[1], linedata[3])
+		header := fmt.Sprintf("Group: %s %s - TGU: %s - %s", linedata[0], linedata[1], linedata[3], linedata[4])
 		gateway := fmt.Sprintf("%s.1 GATEWAY", baseIp)
 		voip := fmt.Sprintf("%s.141 VOIP", baseIp)
 		pc := fmt.Sprintf("%s.10 PC", baseIp)
