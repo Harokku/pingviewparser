@@ -40,6 +40,11 @@ func TestToTitleCase(t *testing.T) {
 			in:   "hElLo WoRlD",
 			want: "Hello World",
 		},
+		{
+			name: "Accent",
+			in:   "hèlLo WÒRl'D",
+			want: "Hèllo Wòrl'd",
+		},
 	}
 
 	for _, tt := range tests {
