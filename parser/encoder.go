@@ -28,6 +28,9 @@ func WritePingviewTemplate(tgu [][]string) error {
 		}
 	}(file)
 
+	// Sort he TGU array by callsign before write it to file
+	_ = sortAscending(tgu, 5)
+
 	// cycle through map and write to file according to template
 	for _, linedata := range tgu {
 		var baseIp string // base IP address
