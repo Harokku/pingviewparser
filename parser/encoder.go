@@ -8,7 +8,7 @@ import (
 // WritePingviewTemplate Create the bulk add template for Pingview manager
 //
 // tgu: map of tgu and line data
-func WritePingviewTemplate(tgu [][]string) error {
+func WritePingviewTemplate(tgu []Data) error {
 	var (
 		err  error    // error
 		file *os.File // file to write to
@@ -29,15 +29,16 @@ func WritePingviewTemplate(tgu [][]string) error {
 	}(file)
 
 	// Sort he TGU array by callsign before write it to file
-	_ = sortAscending(tgu, 5)
+	sortedTgu := sortAscending(tgu, "CallSign")
 
 	// cycle through map and write to file according to template
-	for _, linedata := range tgu {
+	for _, linedata := range sortedTgu {
 		var baseIp string // base IP address
-		if len(linedata[2]) > 0 {
-			baseIp = linedata[2][:len(linedata[2])-2]
+		// Check if network ip field is populated and strip last octet
+		if len(linedata.Network) > 0 {
+			baseIp = linedata.Network[:len(linedata.Network)-2]
 		}
-		header := fmt.Sprintf("Group: %s %s %s - TGU: %s - %s", linedata[5], linedata[0], linedata[1], linedata[3], linedata[4])
+		header := fmt.Sprintf("Group: %s %s %s - TGU: %s - %s", linedata.CallSign, linedata.City, linedata.VType, linedata.Tgu, linedata.Address)
 		gateway := fmt.Sprintf("%s.1 GATEWAY", baseIp)
 		voip := fmt.Sprintf("%s.141 VOIP", baseIp)
 		pc := fmt.Sprintf("%s.10 PC", baseIp)

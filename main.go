@@ -9,28 +9,46 @@ import (
 
 func main() {
 	var (
-		err       error      // error
-		filename  string     // filename from args
-		parsedtgu [][]string // parsed phone numbers
+		err error // error
+		//filename  string              // filename from args
+		//zone      string              // zone to filter from args
+		config    parser.ParserConfig // config struct for parser
+		parsedtgu []parser.Data       // parsed phone numbers
 	)
 
 	// Welcome and usage prompt
 	fmt.Println("PingView Template Generator")
 	fmt.Println("===================================")
 	fmt.Println("")
-	fmt.Println("Usage: pingviewparser <filename>")
+	fmt.Println("Usage: pingviewparser <filename> <zone>")
 	fmt.Println("")
-	fmt.Println("Example: pingviewparser input.csv")
+	fmt.Println("Example: pingviewparser input.csv Laghi")
 	fmt.Println("===================================")
 	fmt.Println("")
 
 	// check if enough arguments
-	if len(os.Args) < 2 {
+	if len(os.Args) < 3 {
 		panic("Not enough arguments")
 	}
 
+	// create parser config struct
+	// Filename is mandatory
+	// Zone is set to all if not specified as argument
+	if len(os.Args) == 3 {
+		config = parser.ParserConfig{
+			Filename: os.Args[1],
+			Zone:     os.Args[2],
+		}
+	} else {
+		config = parser.ParserConfig{
+			Filename: os.Args[1],
+			Zone:     "all",
+		}
+	}
 	// populate variables
-	filename = os.Args[1]
+	//filename = os.Args[1]
+	//zone = os.Args[2]
+	// set ParserConfig
 
 	// start timer for execution time
 	start := time.Now()
@@ -45,7 +63,7 @@ func main() {
 
 	// parse csv
 	fmt.Println("Parsing CSV...")
-	parsedtgu, err = parser.ParseCsv(filename)
+	parsedtgu, err = parser.ParseCsv(config)
 	if err != nil {
 		return
 	}

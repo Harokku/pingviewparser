@@ -3,9 +3,24 @@ package parser
 import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"reflect"
 	"sort"
 	"strings"
 )
+
+type Data struct {
+	Zone     string
+	CallSign string
+	VType    string
+	City     string
+	Address  string
+	Tgu      string
+	Network  string
+}
+type ParserConfig struct {
+	Filename string
+	Zone     string
+}
 
 // toTitleCase takes a string and converts it to title case using the Und language.
 // It trims leading and trailing white spaces before converting.
@@ -21,13 +36,16 @@ func toUpperCase(s string) string {
 	return cases.Upper(language.Italian).String(strings.TrimSpace(s))
 }
 
-// sortAscending sorts a 2D string slice in ascending order based on the values in a specific column.
-// The function takes two parameters: data, a 2D string slice, and subIndex, an integer representing the column index to sort on.
-// It sorts the slice in place using the sort.Slice function and the provided less function, which compares the values in the specified column.
-// The function then returns the sorted slice.
-func sortAscending(data [][]string, subIndex int) [][]string {
-	sort.Slice(data, func(i, j int) bool {
-		return data[i][subIndex] < data[j][subIndex]
+// sortAscending takes a slice of Data structs and a subIndex string as parameters.
+// It uses the reflect package to get the value of the subIndex field of each Data struct.
+// It then uses sort.SliceStable to sort the data slice in ascending order based on the subIndex field value.
+// It returns the sorted data slice.
+func sortAscending(data []Data, subIndex string) []Data {
+	sort.SliceStable(data, func(i, j int) bool {
+		v1 := reflect.ValueOf(data[i]).FieldByName(subIndex)
+		v2 := reflect.ValueOf(data[j]).FieldByName(subIndex)
+
+		return v1.String() < v2.String()
 	})
 
 	return data

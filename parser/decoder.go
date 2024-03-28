@@ -7,17 +7,17 @@ import (
 )
 
 // ParseCsv parses a CSV file and returns a slice of strings containing the subset excluding blank lines
-func ParseCsv(filename string) ([][]string, error) {
+func ParseCsv(config ParserConfig) ([]Data, error) {
 	var (
 		err        error       // error
 		file       *os.File    // file to parse
 		reader     *csv.Reader // csv reader
 		rawdata    [][]string  // parsed raw data
-		parseddata [][]string  // parsed data
+		parseddata []Data      // parsed data
 	)
 
 	// open file
-	file, err = os.Open(filename)
+	file, err = os.Open(config.Filename)
 	if err != nil {
 		return nil, err
 	}
@@ -45,17 +45,25 @@ func ParseCsv(filename string) ([][]string, error) {
 			continue
 		}
 
-		city := toUpperCase(row[4])          // trim spaces from city and uppercase
-		address := toTitleCase(row[3])       // Trim spaces from address and titlecase
-		vtype := strings.TrimSpace(row[1])   // trim spaces from vehicle type
-		callsign := toUpperCase(row[0])      // trim spaces for callsign
-		tgu := strings.TrimSpace(row[5])     // trim spaces from TGU
-		network := strings.TrimSpace(row[6]) // trim spaces from network
+		d := Data{
+			Zone:     toUpperCase(row[0]),       // trim spaces for zone and uppercase
+			CallSign: toUpperCase(row[1]),       // trim spaces for callsign
+			VType:    strings.TrimSpace(row[2]), // trim spaces from vehicle type
+			City:     toUpperCase(row[5]),       // trim spaces from city and uppercase
+			Address:  toTitleCase(row[4]),       // Trim spaces from address and titlecase
+			Tgu:      strings.TrimSpace(row[6]), // trim spaces from TGU
+			Network:  strings.TrimSpace(row[7]), // trim spaces from network
+		}
+
+		// filter out not requested rows
+		if toUpperCase(config.Zone) != d.Zone && config.Zone != "all" {
+			continue
+		}
 
 		// check if TGU is not blank in the CSV
-		if tgu != "" {
+		if d.Tgu != "" {
 			// append to parsed data
-			parseddata = append(parseddata, []string{city, vtype, network, tgu, address, callsign})
+			parseddata = append(parseddata, d)
 		}
 	}
 

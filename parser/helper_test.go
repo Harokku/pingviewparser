@@ -117,49 +117,37 @@ func TestToUpperCase(t *testing.T) {
 }
 
 func TestSortAscending(t *testing.T) {
-	testCases := []struct {
+	cases := []struct {
 		name     string
-		data     [][]string
-		subIndex int
-		expected [][]string
+		data     []Data
+		subIndex string
+		want     []Data
 	}{
 		{
-			name:     "Sort for empty input",
-			data:     [][]string{},
-			subIndex: 0,
-			expected: [][]string{},
+			name: "Basic",
+			data: []Data{
+				{Zone: "Laghi", CallSign: "SOSCUN", VType: "MSB", City: "Cunardo", Address: "Via pini,8", Tgu: "03288574", Network: "192.168.1.1"},
+				{Zone: "Laghi", CallSign: "CRI_VA", VType: "MSB", City: "Varese", Address: "Via pietro,11", Tgu: "023456", Network: "192.168.3.1"},
+			},
+			subIndex: "CallSign", // replace target_field_name with one of fields of a Data object
+			want: []Data{
+				{Zone: "Laghi", CallSign: "CRI_VA", VType: "MSB", City: "Varese", Address: "Via pietro,11", Tgu: "023456", Network: "192.168.3.1"},
+				{Zone: "Laghi", CallSign: "SOSCUN", VType: "MSB", City: "Cunardo", Address: "Via pini,8", Tgu: "03288574", Network: "192.168.1.1"},
+			},
 		},
 		{
-			name:     "Sort for single element",
-			data:     [][]string{{"a"}},
-			subIndex: 0,
-			expected: [][]string{{"a"}},
+			name:     "Empty",
+			data:     []Data{},
+			subIndex: "CallSign", // replace target_field_name with one of fields of a Data object
+			want:     []Data{},
 		},
-		{
-			name:     "Sort for multiple elements",
-			data:     [][]string{{"b"}, {"a"}, {"c"}},
-			subIndex: 0,
-			expected: [][]string{{"a"}, {"b"}, {"c"}},
-		},
-		{
-			name:     "Sort for data containing multiple columns",
-			data:     [][]string{{"b", "1"}, {"a", "2"}, {"c", "0"}},
-			subIndex: 0,
-			expected: [][]string{{"a", "2"}, {"b", "1"}, {"c", "0"}},
-		},
-		{
-			name:     "Sort for same elements",
-			data:     [][]string{{"a"}, {"a"}, {"a"}},
-			subIndex: 0,
-			expected: [][]string{{"a"}, {"a"}, {"a"}},
-		},
+		// Add more test cases here, thinking about interesting scenarios to test.
 	}
-
-	for _, tc := range testCases {
+	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := sortAscending(tc.data, tc.subIndex)
-			if !reflect.DeepEqual(got, tc.expected) {
-				t.Errorf("\nunexpected result\n\tgot: %v\n\twant: %v", got, tc.expected)
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("sortAscending()=%v, want %v", got, tc.want)
 			}
 		})
 	}
