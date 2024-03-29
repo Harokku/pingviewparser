@@ -152,3 +152,100 @@ func TestSortAscending(t *testing.T) {
 		})
 	}
 }
+
+func TestSortAscendingWith2Fields(t *testing.T) {
+	cases := []struct {
+		name      string
+		data      []Data
+		subIndex1 string
+		subIndex2 string
+		want      []Data
+	}{
+		{
+			name: "Basic",
+			data: []Data{
+				{Zone: "Laghi", CallSign: "SOSCUN", VType: "MSB", City: "Cunardo", Address: "Via pini,8", Tgu: "03288574", Network: "192.168.1.1"},
+				{Zone: "Pianura", CallSign: "SOPRHO", VType: "MSB", City: "Rho", Address: "Via pini,8", Tgu: "03288574", Network: "192.168.1.1"},
+				{Zone: "Laghi", CallSign: "CRI_VA", VType: "MSB", City: "Varese", Address: "Via pietro,11", Tgu: "023456", Network: "192.168.3.1"},
+			},
+			subIndex1: "Zone",
+			subIndex2: "CallSign", // replace target_field_name with one of fields of a Data object
+			want: []Data{
+				{Zone: "Laghi", CallSign: "CRI_VA", VType: "MSB", City: "Varese", Address: "Via pietro,11", Tgu: "023456", Network: "192.168.3.1"},
+				{Zone: "Laghi", CallSign: "SOSCUN", VType: "MSB", City: "Cunardo", Address: "Via pini,8", Tgu: "03288574", Network: "192.168.1.1"},
+				{Zone: "Pianura", CallSign: "SOPRHO", VType: "MSB", City: "Rho", Address: "Via pini,8", Tgu: "03288574", Network: "192.168.1.1"},
+			},
+		},
+		{
+			name:      "Empty",
+			data:      []Data{},
+			subIndex1: "Zone",
+			subIndex2: "CallSign", // replace target_field_name with one of fields of a Data object
+			want:      []Data{},
+		},
+		// Add more test cases here, thinking about interesting scenarios to test.
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := sortAscendingWith2Fields(tc.data, tc.subIndex1, tc.subIndex2)
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("sortAscending()=%v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestIsValidIPv4(t *testing.T) {
+
+	testCases := []struct {
+		name     string
+		ip       string
+		expected bool
+	}{
+		{
+			name:     "Valid IP",
+			ip:       "192.168.1.1",
+			expected: true,
+		},
+		{
+			name:     "Invalid IP with characters",
+			ip:       "192.168.1.abc",
+			expected: false,
+		},
+		{
+			name:     "Invalid IP with extra dot",
+			ip:       "192.168.1.1.",
+			expected: false,
+		},
+		{
+			name:     "Valid IP at limit",
+			ip:       "255.255.255.255",
+			expected: true,
+		},
+		{
+			name:     "Invalid IP over limit",
+			ip:       "256.255.255.255",
+			expected: false,
+		},
+		{
+			name:     "IPV6 address",
+			ip:       "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+			expected: false,
+		},
+		{
+			name:     "Empty string",
+			ip:       "",
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := isValidIpv4(tc.ip)
+
+			if result != tc.expected {
+				t.Errorf("expected %v, but got %v", tc.expected, result)
+			}
+		})
+	}
+}

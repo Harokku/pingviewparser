@@ -27,7 +27,7 @@ func main() {
 	fmt.Println("")
 
 	// check if enough arguments
-	if len(os.Args) < 3 {
+	if len(os.Args) < 2 {
 		panic("Not enough arguments")
 	}
 
